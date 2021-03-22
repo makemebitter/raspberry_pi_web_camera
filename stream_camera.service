@@ -1,0 +1,10 @@
+[Unit]
+Description=Camera Streaming Service
+After=network.target rc-local.service
+[Service]
+Restart=on-abort
+RestartSec=5s
+RuntimeMaxSec=10800
+ExecStart=ffmpeg -f v4l2 -i /dev/video0 -f alsa -ac 1 -ar 44100 -i hw:CARD=CMTECK -s 640x480 -r 30 -codec:v h264_omx -b:v 2M -c:a aac -b:a 96k -vf "drawtext=fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='%{localtime}':x=8:y=8:fontcolor=white: box=1: boxcolor=black" -f dash -window_size 10 -remove_at_exit 1 -hls_playlist 1 /dev/shm/streaming/manifest.mpd
+[Install]
+WantedBy=multi-user.target
